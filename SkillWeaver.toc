@@ -38,9 +38,13 @@ modules/StockManager.lua
 
 # Database
 db/Interrupts.lua
+Data/Loadouts.lua
+Data/StatWeights.lua
 
 # Engine
 engine/ConditionParser.lua
+engine/Racials.lua
+engine/LossOfControl.lua
 engine/ResourceCheck.lua
 engine/CooldownLogic.lua
 engine/SequenceEngine.lua
@@ -57,13 +61,17 @@ ui/ModeSelector.lua
 ui/SequenceBrowser.lua
 ui/SequencePreview.lua
 ui/TalentViewer.lua
+ui/TalentViewer.lua
 ui/Overlay.lua
+ui/ItemOverlay.lua
 
 # Sequences
 sequences/Priest.lua
 sequences/Warrior.lua
 sequences/Paladin.lua
 sequences/Generated_Scraped.lua
+sequences/warrior_midnight.lua
+sequences/priest_midnight.lua
 
 # Loader (Must be last to load class modules)
 Loader.lua

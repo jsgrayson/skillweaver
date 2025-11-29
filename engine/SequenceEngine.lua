@@ -43,6 +43,40 @@ function Engine:Execute(cmd)
     end
 
     -- Full Engine execution
+    -- Full Engine execution
+    if cmd == "racial" then
+        if SkillWeaver.Racials and SkillWeaver.Racials.ShouldUseRacial then
+            local should, spellId = SkillWeaver.Racials.ShouldUseRacial()
+            if should and spellId then
+                local spellName = GetSpellInfo(spellId)
+                if spellName then
+                    RunMacroText("/cast " .. spellName)
+                    return
+                end
+            end
+        end
+        return -- Racial requested but not usable/found
+    end
+
+    if cmd == "cc_break" then
+        if SkillWeaver.LossOfControl and SkillWeaver.LossOfControl.ShouldBreakCC then
+            local should, id, type = SkillWeaver.LossOfControl.ShouldBreakCC()
+            if should and id then
+                if type == "item" then
+                    RunMacroText("/use " .. id) -- Use item by slot ID
+                    return
+                elseif type == "spell" then
+                    local spellName = GetSpellInfo(id)
+                    if spellName then
+                        RunMacroText("/cast " .. spellName)
+                        return
+                    end
+                end
+            end
+        end
+        return -- CC Break requested but not needed/usable
+    end
+
     RunMacroText(cmd)
 end
 
@@ -138,6 +172,34 @@ function Engine:Run(classSpec, mode, variant)
         -- Always advance in sequential mode
         state.index = self:NextStep(seq, state)
     end
+end
+
+------------------------------------------------------------
+-- Evaluate Next Spell (For Visual Cue / AI Camera)
+------------------------------------------------------------
+function Engine:EvaluateNext(sequence)
+    if not sequence then return nil end
+    
+    -- We only support Priority lists for Visual Cues (Standard Rotation)
+    -- Sequential lists (Spam) are handled by the spammer itself, but we can still show the next step.
+    
+    local isPriority = (sequence.type == "Priority")
+    
+    if isPriority then
+        for i, step in ipairs(sequence.st or sequence.steps) do
+            if self:PassesConditions(step.conditions) then
+                -- Return the icon/command
+                return step.command
+            end
+        end
+    else
+        -- Sequential: Just show the next step
+        local state = GetState("VISUAL_PREVIEW") -- Use a dummy state
+        local step = sequence.steps[state.index] or sequence.steps[1]
+        return step.command
+    end
+    
+    return nil
 end
 
 ------------------------------------------------------------

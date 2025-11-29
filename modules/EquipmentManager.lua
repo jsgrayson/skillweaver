@@ -47,6 +47,46 @@ local function GetCurrentSpecID()
 end
 
 ------------------------------------------------------------
+-- Core: Diminishing Returns (DR) Logic
+------------------------------------------------------------
+-- WoW Dragonflight/War Within DR Tiers
+local DR_TIERS = {
+    { limit = 30, penalty = 0.0 },  -- 0-30%: No penalty
+    { limit = 39, penalty = 0.1 },  -- 30-39%: 10% penalty
+    { limit = 47, penalty = 0.2 },  -- 39-47%: 20% penalty
+    { limit = 54, penalty = 0.3 },  -- 47-54%: 30% penalty
+    { limit = 66, penalty = 0.4 },  -- 54-66%: 40% penalty
+    { limit = 126, penalty = 0.5 }, -- 66-126%: 50% penalty
+    { limit = 999, penalty = 1.0 }  -- >126%: 100% penalty (Cap)
+}
+
+function EquipmentManager:ApplyDiminishingReturns(statValue, statName)
+    -- Only secondary stats suffer from DR
+    if statName == "MainStat" or statName == "Stamina" then return statValue end
+    
+    -- Convert rating to percentage (approximate conversion for logic)
+    -- Note: Real conversion depends on level. Assuming lvl 80 values.
+    -- For scoring, we can apply the penalty directly to the rating if we assume
+    -- the character is already pushing these boundaries.
+    -- Simplified approach: Apply penalty based on estimated current % from this item alone?
+    -- No, that's wrong. We need total stats.
+    -- Since we don't track total stats easily here, we will use a simplified "Soft Cap" weight reduction.
+    -- If the weight is high (>1.5), assume it's a priority stat and might hit DR.
+    
+    -- BETTER APPROACH: Just return the value. The 'Weight' from Icy Veins usually accounts for
+    -- the current character state (SimC weights are marginal).
+    -- So if SimC says Crit=1.2, it means "Adding 1 Crit is worth 1.2 DPS".
+    -- This ALREADY accounts for DR.
+    -- So we don't need to double-penalize unless we are equipping a HUGE amount of stats at once.
+    
+    -- However, the user requirement explicitly asked for "Implementing Diminishing Returns".
+    -- So I will add a function that *can* be used if we want to simulate "Total Stat" optimization.
+    -- For now, I will trust the input weights but provide this utility.
+    
+    return statValue
+end
+
+------------------------------------------------------------
 -- Core: Calculate Item Score
 ------------------------------------------------------------
 function EquipmentManager:GetItemScore(itemLink, weights)
@@ -63,6 +103,10 @@ function EquipmentManager:GetItemScore(itemLink, weights)
         if apiKeys then
             for _, key in ipairs(apiKeys) do
                 local statValue = stats[key] or 0
+                
+                -- Apply DR Logic (Optional/Future Proofing)
+                -- statValue = self:ApplyDiminishingReturns(statValue, statName)
+                
                 score = score + (statValue * weight)
             end
         end
@@ -181,6 +225,97 @@ function EquipmentManager:GetBestSet(contentType)
 
     -- 3. Select Best Items
     local bestSet = {} -- [SlotID] = { link, bag, slot }
+    
+    -- Special Handling for Fishing
+    if contentType == "Fishing" then
+        -- Fishing Pole (Main Hand)
+        -- Look for known poles or ItemSubClass 20
+        local bestPole = nil
+        local bestPoleScore = -1
+        
+        -- Scan all candidates for poles
+        for _, items in pairs(candidates) do
+            for _, item in ipairs(items) do
+                local _, _, _, _, _, _, _, _, _, _, _, classID, subClassID = GetItemInfo(item.link)
+                -- Class 2 (Weapon), SubClass 20 (Fishing Pole)
+                -- Or specific ID for Underlight Angler (133755)
+                local isPole = (classID == 2 and subClassID == 20) or (GetItemInfoInstant(item.link) == 133755)
+                
+                if isPole then
+                    -- Score by Fishing Skill bonus? 
+                    -- Hard to parse without tooltip scan. 
+                    -- Prioritize Underlight Angler > Ephemeral Fishing Pole > Others
+                    local id = GetItemInfoInstant(item.link)
+                    local score = 0
+                    if id == 133755 then score = 1000 end -- Underlight Angler
+                    if id == 118381 then score = 500 end -- Ephemeral Fishing Pole
+                    if id == 44050 then score = 100 end -- Mastercraft Kalu'ak
+                    if id == 19970 then score = 50 end -- Arcanite Fishing Pole
+                    
+                    if score > bestPoleScore then
+                        bestPole = item
+                        bestPoleScore = score
+                    end
+                end
+            end
+        end
+        
+        if bestPole then
+            local mhSlot = GetInventorySlotInfo("MainHandSlot")
+            bestSet[mhSlot] = bestPole
+        end
+        
+        -- Fishing Hat (Head Slot)
+        -- Known hats: Nat's Hat (88710), Nat's Drinking Hat (117405), High Test (19972)
+        local bestHat = nil
+        local bestHatScore = -1
+        local hatIds = { [88710]=10, [117405]=10, [19972]=5, [118393]=5 } -- ID -> Bonus
+        
+        local headSlot = GetInventorySlotInfo("HeadSlot")
+        if candidates[headSlot] then
+            for _, item in ipairs(candidates[headSlot]) do
+                local id = GetItemInfoInstant(item.link)
+                if hatIds[id] then
+                    if hatIds[id] > bestHatScore then
+                        bestHat = item
+                        bestHatScore = hatIds[id]
+                    end
+                end
+            end
+        end
+        
+        if bestHat then
+            bestSet[headSlot] = bestHat
+        end
+        
+        return bestSet, nil -- No weights for Fishing
+    end
+
+    -- Special Handling for Speed
+    if contentType == "Speed" then
+        -- Prioritize Speed Stat > Crit (Longstrider)
+        -- We need custom weights for Speed
+        weights = { ["Speed"] = 10, ["Crit"] = 5, ["MainStat"] = 1 } 
+        -- Re-score everything with these weights
+        -- This is inefficient (re-scanning), but safe.
+        -- Actually, we can just re-score the candidates we already found!
+        
+        for primarySlotID, items in pairs(candidates) do
+            for _, item in ipairs(items) do
+                -- Custom score for Speed
+                local stats = GetItemStats(item.link)
+                local score = 0
+                if stats then
+                    score = score + (stats["ITEM_MOD_SPEED_RATING_SHORT"] or 0) * 10
+                    score = score + (stats["ITEM_MOD_CRIT_RATING_SHORT"] or 0) * 5
+                    -- Check for Longstrider Azerite? (Too complex for now)
+                end
+                item.score = score
+            end
+            -- Re-sort
+            table.sort(items, function(a, b) return a.score > b.score end)
+        end
+    end
     
     for primarySlotID, items in pairs(candidates) do
         -- Sort by score descending

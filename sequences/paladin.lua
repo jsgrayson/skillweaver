@@ -38,6 +38,29 @@ SkillWeaver.Sequences[PALADIN_PROT] = {
             steps = {}
         }
     }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Sentinel", conditions = "can_cast:Sentinel" },
+            { command = "/cast Eye of Tyr", conditions = "can_cast:Eye of Tyr" },
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Bastion of Light", conditions = "can_cast:Bastion of Light" },
+            { command = "/cast Ardent Defender", conditions = "can_cast:Ardent Defender" },
+            { command = "/cast Guardian of Ancient Kings", conditions = "can_cast:Guardian of Ancient Kings" },
+            
+            -- Core Rotation
+            { command = "/cast Shield of the Righteous", conditions = "can_cast:Shield of the Righteous" },
+            { command = "/cast Judgment", conditions = "can_cast:Judgment" },
+            { command = "/cast Avenger's Shield", conditions = "can_cast:Avenger's Shield" },
+            { command = "/cast Hammer of Wrath", conditions = "can_cast:Hammer of Wrath" },
+            { command = "/cast Blessed Hammer", conditions = "true" },
+            { command = "/cast Consecration", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
+    }
 }
 
 -- RETRIBUTION (DPS)
@@ -129,6 +152,30 @@ SkillWeaver.Sequences[PALADIN_RET] = {
             steps = {}
         }
     }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Crusade", conditions = "can_cast:Crusade" },
+            { command = "/cast Avenging Wrath", conditions = "can_cast:Avenging Wrath" },
+            { command = "/cast Execution Sentence", conditions = "can_cast:Execution Sentence" },
+            { command = "/cast Final Reckoning", conditions = "can_cast:Final Reckoning" },
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Wake of Ashes", conditions = "can_cast:Wake of Ashes" },
+            { command = "/cast Hammer of Light", conditions = "can_cast:Hammer of Light" },
+            
+            -- Core Rotation
+            { command = "/cast Final Verdict", conditions = "can_cast:Final Verdict" },
+            { command = "/cast Templar's Verdict", conditions = "can_cast:Templar's Verdict" },
+            { command = "/cast Judgment", conditions = "can_cast:Judgment" },
+            { command = "/cast Blade of Justice", conditions = "can_cast:Blade of Justice" },
+            { command = "/cast Hammer of Wrath", conditions = "can_cast:Hammer of Wrath" },
+            { command = "/cast Crusader Strike", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
+    }
 }
 
 -- HOLY (Healer)
@@ -159,5 +206,27 @@ SkillWeaver.Sequences[PALADIN_HOLY] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Avenging Wrath", conditions = "can_cast:Avenging Wrath" },
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Tyr's Deliverance", conditions = "can_cast:Tyr's Deliverance" },
+            { command = "/cast Light's Hammer", conditions = "can_cast:Light's Hammer" },
+            { command = "/cast Holy Prism", conditions = "can_cast:Holy Prism" },
+            { command = "/cast Barrier of Faith", conditions = "can_cast:Barrier of Faith" },
+            
+            -- Core Rotation
+            { command = "/cast Holy Shock", conditions = "can_cast:Holy Shock" },
+            { command = "/cast Word of Glory", conditions = "can_cast:Word of Glory" },
+            { command = "/cast Light of Dawn", conditions = "can_cast:Light of Dawn" },
+            { command = "/cast Judgment", conditions = "can_cast:Judgment" },
+            { command = "/cast Hammer of Wrath", conditions = "can_cast:Hammer of Wrath" },
+            { command = "/cast Crusader Strike", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

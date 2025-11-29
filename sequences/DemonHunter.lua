@@ -97,6 +97,28 @@ SkillWeaver.Sequences[DH_HAVOC] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast The Hunt", conditions = "can_cast:The Hunt" },
+            { command = "/cast Elysian Decree", conditions = "can_cast:Elysian Decree" },
+            { command = "/cast Fel Barrage", conditions = "can_cast:Fel Barrage" },
+            { command = "/cast Glaive Tempest", conditions = "can_cast:Glaive Tempest" },
+            { command = "/cast Essence Break", conditions = "can_cast:Essence Break" },
+            { command = "/cast Metamorphosis", conditions = "can_cast:Metamorphosis" },
+            
+            -- Core Rotation
+            { command = "/cast Eye Beam", conditions = "can_cast:Eye Beam" },
+            { command = "/cast Immolation Aura", conditions = "can_cast:Immolation Aura" },
+            { command = "/cast Blade Dance", conditions = "can_cast:Blade Dance" },
+            { command = "/cast Chaos Strike", conditions = "can_cast:Chaos Strike" },
+            { command = "/cast Sigil of Flame", conditions = "can_cast:Sigil of Flame" },
+            { command = "/cast Demon's Bite", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -122,5 +144,27 @@ SkillWeaver.Sequences[DH_VENGEANCE] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast The Hunt", conditions = "can_cast:The Hunt" },
+            { command = "/cast Elysian Decree", conditions = "can_cast:Elysian Decree" },
+            { command = "/cast Fel Devastation", conditions = "can_cast:Fel Devastation" },
+            { command = "/cast Fiery Brand", conditions = "can_cast:Fiery Brand" },
+            { command = "/cast Bulk Extraction", conditions = "can_cast:Bulk Extraction" },
+            { command = "/cast Demon Spikes", conditions = "can_cast:Demon Spikes" },
+            
+            -- Core Rotation
+            { command = "/cast Spirit Bomb", conditions = "can_cast:Spirit Bomb" },
+            { command = "/cast Soul Cleave", conditions = "can_cast:Soul Cleave" },
+            { command = "/cast Immolation Aura", conditions = "can_cast:Immolation Aura" },
+            { command = "/cast Sigil of Flame", conditions = "can_cast:Sigil of Flame" },
+            { command = "/cast Fracture", conditions = "can_cast:Fracture" },
+            { command = "/cast Shear", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

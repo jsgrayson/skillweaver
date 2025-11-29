@@ -66,6 +66,33 @@ SkillWeaver.Sequences[WARLOCK_AFFLICTION] = {
             steps = {}
         }
     }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Multi-DoT: Cycle if Agony is up. 
+            { command = "/cycle", conditions = "debuff:Agony" },
+            
+            -- Cooldowns & Talents
+            { command = "/cast Summon Darkglare", conditions = "can_cast:Summon Darkglare" },
+            { command = "/cast Soul Rot", conditions = "can_cast:Soul Rot" },
+            { command = "/cast Phantom Singularity", conditions = "can_cast:Phantom Singularity" },
+            { command = "/cast Vile Taint", conditions = "can_cast:Vile Taint" },
+            
+            -- Spenders
+            { command = "/cast Malefic Rapture", conditions = "can_cast:Malefic Rapture" },
+            
+            -- DoTs & Fillers
+            { command = "/cast Agony", conditions = "true" },
+            { command = "/cast Corruption", conditions = "true" },
+            { command = "/cast Unstable Affliction", conditions = "true" },
+            { command = "/cast Siphon Life", conditions = "can_cast:Siphon Life" },
+            { command = "/cast Drain Soul", conditions = "can_cast:Drain Soul" }, -- Execute/Filler
+            { command = "/cast Shadow Bolt", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
+    }
 }
 
 -----------------------------------------------------------
@@ -121,6 +148,28 @@ SkillWeaver.Sequences[WARLOCK_DEMONOLOGY] = {
             },
             steps = {}
         }
+    }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Summon Demonic Tyrant", conditions = "can_cast:Summon Demonic Tyrant" },
+            { command = "/cast Nether Portal", conditions = "can_cast:Nether Portal" },
+            { command = "/cast Grimoire: Felguard", conditions = "can_cast:Grimoire: Felguard" },
+            { command = "/cast Summon Vilefiend", conditions = "can_cast:Summon Vilefiend" },
+            { command = "/cast Power Siphon", conditions = "can_cast:Power Siphon" },
+            { command = "/cast Bilescourge Bombers", conditions = "can_cast:Bilescourge Bombers" },
+            { command = "/cast Guillotine", conditions = "can_cast:Guillotine" },
+            
+            -- Core Rotation
+            { command = "/cast Hand of Gul'dan", conditions = "can_cast:Hand of Gul'dan" },
+            { command = "/cast Call Dreadstalkers", conditions = "can_cast:Call Dreadstalkers" },
+            { command = "/cast Demonbolt", conditions = "can_cast:Demonbolt" },
+            { command = "/cast Shadow Bolt", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -216,5 +265,34 @@ SkillWeaver.Sequences[WARLOCK_DESTRUCTION] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Multi-DoT: Cycle if Immolate (Wither) is up.
+            { command = "/cycle", conditions = "debuff:Immolate" },
+            
+            -- Hero Talents (Diabolist / Hellcaller)
+            { command = "/cast Ruination", conditions = "can_cast:Ruination" }, -- Diabolist Proc
+            { command = "/cast Wither", conditions = "can_cast:Wither" }, -- Hellcaller Replacement
+            
+            -- Cooldowns & Talents
+            { command = "/cast Summon Infernal", conditions = "can_cast:Summon Infernal" },
+            { command = "/cast Dimensional Rift", conditions = "can_cast:Dimensional Rift" },
+            { command = "/cast Cataclysm", conditions = "can_cast:Cataclysm" },
+            { command = "/cast Channel Demonfire", conditions = "can_cast:Channel Demonfire" },
+            { command = "/cast Soul Fire", conditions = "can_cast:Soul Fire" },
+            
+            -- Spenders & Finishers
+            { command = "/cast Shadowburn", conditions = "can_cast:Shadowburn" },
+            { command = "/cast Chaos Bolt", conditions = "can_cast:Chaos Bolt" },
+            
+            -- Generators
+            { command = "/cast Conflagrate", conditions = "can_cast:Conflagrate" },
+            { command = "/cast Immolate", conditions = "can_cast:Immolate" },
+            { command = "/cast Incinerate", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

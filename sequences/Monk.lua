@@ -82,5 +82,26 @@ SkillWeaver.Sequences[MONK_WINDWALKER] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Invoke Xuen, the White Tiger", conditions = "can_cast:Invoke Xuen, the White Tiger" },
+            { command = "/cast Touch of Death", conditions = "can_cast:Touch of Death" },
+            { command = "/cast Storm, Earth, and Fire", conditions = "can_cast:Storm, Earth, and Fire" },
+            { command = "/cast Serenity", conditions = "can_cast:Serenity" },
+            { command = "/cast Celestial Conduit", conditions = "can_cast:Celestial Conduit" },
+            { command = "/cast Whirling Dragon Punch", conditions = "can_cast:Whirling Dragon Punch" },
+            { command = "/cast Strike of the Windlord", conditions = "can_cast:Strike of the Windlord" },
+            
+            -- Core Rotation
+            { command = "/cast Rising Sun Kick", conditions = "can_cast:Rising Sun Kick" },
+            { command = "/cast Fists of Fury", conditions = "can_cast:Fists of Fury" },
+            { command = "/cast Blackout Kick", conditions = "can_cast:Blackout Kick" },
+            { command = "/cast Tiger Palm", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

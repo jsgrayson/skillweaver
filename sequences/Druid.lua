@@ -101,5 +101,35 @@ SkillWeaver.Sequences[DRUID_BALANCE] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Multi-DoT: Cycle if both Moonfire and Sunfire are up
+            { command = "/cycle", conditions = "debuff:Moonfire and debuff:Sunfire" },
+            
+            -- Cooldowns & Talents
+            { command = "/cast Celestial Alignment", conditions = "can_cast:Celestial Alignment" },
+            { command = "/cast Incarnation: Chosen of Elune", conditions = "can_cast:Incarnation: Chosen of Elune" }, -- Alt CA
+            { command = "/cast Convoke the Spirits", conditions = "can_cast:Convoke the Spirits" },
+            { command = "/cast Fury of Elune", conditions = "can_cast:Fury of Elune" },
+            { command = "/cast Force of Nature", conditions = "can_cast:Force of Nature" },
+            { command = "/cast Warrior of Elune", conditions = "can_cast:Warrior of Elune" },
+            { command = "/cast New Moon", conditions = "can_cast:New Moon" },
+            { command = "/cast Half Moon", conditions = "can_cast:Half Moon" },
+            { command = "/cast Full Moon", conditions = "can_cast:Full Moon" },
+            
+            -- Spenders
+            { command = "/cast Starsurge", conditions = "can_cast:Starsurge" },
+            { command = "/cast Starfall", conditions = "can_cast:Starfall" },
+            
+            -- Generators
+            { command = "/cast Starfire", conditions = "can_cast:Starfire" },
+            { command = "/cast Wrath", conditions = "true" },
+            { command = "/cast Moonfire", conditions = "true" },
+            { command = "/cast Sunfire", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

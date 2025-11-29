@@ -1,4 +1,6 @@
 local HealerLoader = require("skillweaver.core.HealerLoader")
+require("skillweaver.core.ContentDetector")
+require("skillweaver.core.AutoTrinkets")
 
 local SkillWeaver = {}
 
@@ -124,5 +126,165 @@ function SkillWeaver:IsHealerSpec(specID)
         specID == "EVOKER_1468"
     )
 end
+
+---------------------------------------------------------
+-- Content-Aware Loadout Switching
+---------------------------------------------------------
+function SkillWeaver:OnContentChanged(newType)
+    self:CheckLoadout(newType)
+end
+
+function SkillWeaver:CheckLoadout(contentType)
+    if not SkillWeaverDB or not SkillWeaverDB.Loadouts then return end
+    
+    local specID = self.currentSpec or GetSpecializationInfo(GetSpecialization())
+    if not specID then return end
+    
+    local loadouts = SkillWeaverDB.Loadouts[specID]
+    if not loadouts then return end
+    
+    -- Map internal types to DB keys
+    local dbKey = nil
+    if contentType == "RAID" then dbKey = "Raid"
+    elseif contentType == "MYTHIC_PLUS" then dbKey = "MythicPlus"
+    elseif contentType == "PVP" or contentType == "ARENA" then dbKey = "PvP"
+    end
+    
+    if dbKey and loadouts[dbKey] then
+        local importString = loadouts[dbKey]
+        print("|cff00ff00SkillWeaver: Detected " .. contentType .. ".|r")
+        print("|cffFFFF00Suggested Loadout Found!|r Type |cff00ffff/sw load " .. dbKey .. "|r to apply.")
+        
+        -- Store for slash command
+        self.pendingLoadout = importString
+    end
+end
+
+SLASH_SKILLWEAVER1 = "/sw"
+SlashCmdList["SKILLWEAVER"] = function(msg)
+    local cmd, arg = msg:match("^(%S*)%s*(.-)$")
+    
+    if cmd == "load" and arg then
+        -- Handle "/sw load Raid"
+        local specID = GetSpecializationInfo(GetSpecialization())
+        if SkillWeaverDB and SkillWeaverDB.Loadouts and SkillWeaverDB.Loadouts[specID] then
+            local str = SkillWeaverDB.Loadouts[specID][arg]
+            if str then
+                C_ClassTalents.ImportLoadout(str, arg .. " (SW)")
+                print("SkillWeaver: Importing loadout for " .. arg)
+            else
+                print("SkillWeaver: No loadout found for " .. arg)
+            end
+        end
+    elseif cmd == "equip" then
+        if arg == "Raid" or arg == "M+" or arg == "PvP" or arg == "Delve" or arg == "Fishing" or arg == "Speed" then
+            SkillWeaver.EquipmentManager:EquipBestSet(arg)
+        else
+            print("Usage: /sw equip [Raid|M+|PvP|Delve|Fishing|Speed]")
+        end
+    else
+        print("SkillWeaver Commands:")
+        print("  /sw load [Raid|MythicPlus|PvP] - Import talent loadout")
+        print("  /sw equip [Raid|M+|PvP|Delve|Fishing|Speed] - Equip best gear for content")
+    end
+end
+
+---------------------------------------------------------
+-- Visual Loop (AI Camera Support)
+---------------------------------------------------------
+local visualTimer = 0
+local VISUAL_INTERVAL = 0.1
+
+local visualFrame = CreateFrame("Frame")
+visualFrame:SetScript("OnUpdate", function(self, elapsed)
+    visualTimer = visualTimer + elapsed
+    if visualTimer < VISUAL_INTERVAL then return end
+    visualTimer = 0
+    
+    if not SkillWeaver.ActiveSequence then return end
+    
+    -- Ask Engine what the best spell is
+    local cmd = SkillWeaver.Engine.Sequence:EvaluateNext(SkillWeaver.ActiveSequence)
+    
+    -- Extract Spell Name/Icon from command
+    -- Command is like "/cast Rampage"
+    -- Handle Cycle/Targeting
+    if cmd:match("^/cycle") or cmd:match("^/targetenemy") then
+        -- Pass a placeholder icon and the command so VisualCue triggers the Green Light
+        SkillWeaver.VisualCue:Update("Interface\\Icons\\INV_Misc_QuestionMark", "/cycle")
+        return
+    end
+
+    -- Handle Cast
+    local spell = cmd:match("/cast%s+(.+)")
+    if spell then
+        -- Strip conditionals like [target=focus]
+        spell = spell:gsub("%[.-%]", ""):match("^%s*(.-)%s*$") -- Remove brackets and trim
+        
+        local name, _, icon = GetSpellInfo(spell)
+        -- Use the localized name from GetSpellInfo if possible, otherwise the command string
+        SkillWeaver.VisualCue:Update(icon, name or spell)
+    else
+        SkillWeaver.VisualCue:Update(nil, nil)
+    end
+end)
+
+-- Event Frame for Data Export
+local exportFrame = CreateFrame("Frame")
+exportFrame:RegisterEvent("PLAYER_LOGOUT")
+exportFrame:SetScript("OnEvent", function(self, event)
+    if event == "PLAYER_LOGOUT" then
+        SkillWeaverDB = SkillWeaverDB or {}
+        SkillWeaverDB.Bags = {}
+        
+        -- Scan Bags
+        for bag = 0, 4 do
+            local numSlots = C_Container.GetContainerNumSlots(bag)
+            for slot = 1, numSlots do
+                local info = C_Container.GetContainerItemInfo(bag, slot)
+                if info then
+                    local link = info.hyperlink
+                    local _, _, quality, iLvl, _, _, _, _, _, _, sellPrice, classID, subClassID = GetItemInfo(link)
+                    local name = GetItemInfo(link) 
+                    
+                    table.insert(SkillWeaverDB.Bags, {
+                        name = name or "Unknown",
+                        link = link,
+                        id = info.itemID,
+                        quality = quality,
+                        ilvl = iLvl,
+                        sellPrice = sellPrice,
+                        slot = slot,
+                        bag = bag,
+                        classID = classID,
+                        subClassID = subClassID
+                    })
+                end
+            end
+        end
+        
+        -- Scan Equipped
+        SkillWeaverDB.Equipped = {}
+        for slotID = 1, 19 do -- Scan all slots
+            local link = GetInventoryItemLink("player", slotID)
+            if link then
+                local _, _, quality, iLvl = GetItemInfo(link)
+                local name = GetItemInfo(link)
+                local id = GetItemInfoInstant(link)
+                
+                table.insert(SkillWeaverDB.Equipped, {
+                    name = name or "Unknown",
+                    link = link,
+                    id = id,
+                    quality = quality,
+                    ilvl = iLvl,
+                    slotID = slotID
+                })
+            end
+        end
+        
+        print("SkillWeaver: Bag and Equipment data saved.")
+    end
+end)
 
 return SkillWeaver

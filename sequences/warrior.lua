@@ -255,4 +255,26 @@ SkillWeaver.Sequences[WARRIOR_PROT] = {
             steps = {}
         }
     }
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Avatar", conditions = "can_cast:Avatar" },
+            { command = "/cast Shield Wall", conditions = "can_cast:Shield Wall" },
+            { command = "/cast Last Stand", conditions = "can_cast:Last Stand" },
+            { command = "/cast Demoralizing Shout", conditions = "can_cast:Demoralizing Shout" },
+            { command = "/cast Ravager", conditions = "can_cast:Ravager" },
+            { command = "/cast Champions Spear", conditions = "can_cast:Champions Spear" },
+            { command = "/cast Shockwave", conditions = "can_cast:Shockwave" },
+            
+            -- Core Rotation
+            { command = "/cast Shield Slam", conditions = "can_cast:Shield Slam" },
+            { command = "/cast Thunder Clap", conditions = "can_cast:Thunder Clap" },
+            { command = "/cast Revenge", conditions = "can_cast:Revenge" },
+            { command = "/cast Execute", conditions = "can_cast:Execute" },
+            { command = "/cast Devastate", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
+    }
 }

@@ -95,5 +95,28 @@ SkillWeaver.Sequences[SHAMAN_ENHANCEMENT] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Feral Spirit", conditions = "can_cast:Feral Spirit" },
+            { command = "/cast Primordial Wave", conditions = "can_cast:Primordial Wave" },
+            { command = "/cast Doom Winds", conditions = "can_cast:Doom Winds" },
+            { command = "/cast Ascendance", conditions = "can_cast:Ascendance" },
+            { command = "/cast Sundering", conditions = "can_cast:Sundering" },
+            { command = "/cast Surging Totem", conditions = "can_cast:Surging Totem" },
+            
+            -- Core Rotation
+            { command = "/cast Tempest", conditions = "can_cast:Tempest" },
+            { command = "/cast Elemental Blast", conditions = "can_cast:Elemental Blast" },
+            { command = "/cast Stormstrike", conditions = "can_cast:Stormstrike" },
+            { command = "/cast Lava Lash", conditions = "can_cast:Lava Lash" },
+            { command = "/cast Ice Strike", conditions = "can_cast:Ice Strike" },
+            { command = "/cast Crash Lightning", conditions = "can_cast:Crash Lightning" },
+            { command = "/cast Lightning Bolt", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

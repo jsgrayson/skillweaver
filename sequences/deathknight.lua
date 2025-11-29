@@ -131,6 +131,26 @@ data["DEATHKNIGHT_250"] = {
                 { command="/cast Death Strike" },
             }
         }
+    },
+    Midnight = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Abomination Limb", conditions = "can_cast:Abomination Limb" },
+            { command = "/cast Bonestorm", conditions = "can_cast:Bonestorm" },
+            { command = "/cast Consumption", conditions = "can_cast:Consumption" },
+            { command = "/cast Blooddrinker", conditions = "can_cast:Blooddrinker" },
+            { command = "/cast Dancing Rune Weapon", conditions = "can_cast:Dancing Rune Weapon" },
+            { command = "/cast Tombstone", conditions = "can_cast:Tombstone" },
+            
+            -- Core Rotation
+            { command = "/cast Marrowrend", conditions = "can_cast:Marrowrend" },
+            { command = "/cast Death Strike", conditions = "can_cast:Death Strike" },
+            { command = "/cast Blood Boil", conditions = "can_cast:Blood Boil" },
+            { command = "/cast Heart Strike", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -260,6 +280,18 @@ data["DEATHKNIGHT_251"] = {
                 { command="/cast Frost Strike" },
             }
         }
+    },
+    Midnight = {
+        type = "Priority",
+        st = {
+            { command = "/cast Pillar of Frost", conditions = "can_cast:Pillar of Frost" },
+            { command = "/cast Remorseless Winter", conditions = "can_cast:Remorseless Winter" },
+            { command = "/cast Howling Blast", conditions = "can_cast:Howling Blast" },
+            { command = "/cast Obliterate", conditions = "can_cast:Obliterate" },
+            { command = "/cast Frost Strike", conditions = "can_cast:Frost Strike" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -374,6 +406,20 @@ data["DEATHKNIGHT_252"] = {
                 { command="/cast Scourge Strike",      conditions="wounds>=1" },
             }
         }
+    },
+    Midnight = {
+        type = "Priority",
+        st = {
+            { command = "/cast Dark Transformation", conditions = "can_cast:Dark Transformation" },
+            { command = "/cast Apocalypse", conditions = "can_cast:Apocalypse" },
+            { command = "/cast Unholy Assault", conditions = "can_cast:Unholy Assault" },
+            { command = "/cast Outbreak", conditions = "can_cast:Outbreak" },
+            { command = "/cast Festering Strike", conditions = "can_cast:Festering Strike" },
+            { command = "/cast Scourge Strike", conditions = "can_cast:Scourge Strike" },
+            { command = "/cast Death Coil", conditions = "can_cast:Death Coil" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 

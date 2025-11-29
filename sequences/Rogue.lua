@@ -184,5 +184,26 @@ SkillWeaver.Sequences[ROGUE_SUBTLETY] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Shadow Blades", conditions = "can_cast:Shadow Blades" },
+            { command = "/cast Shadow Dance", conditions = "can_cast:Shadow Dance" },
+            { command = "/cast Symbols of Death", conditions = "can_cast:Symbols of Death" },
+            { command = "/cast Secret Technique", conditions = "can_cast:Secret Technique" },
+            { command = "/cast Cold Blood", conditions = "can_cast:Cold Blood" },
+            { command = "/cast Flagellation", conditions = "can_cast:Flagellation" },
+            { command = "/cast Goremaw's Bite", conditions = "can_cast:Goremaw's Bite" },
+            { command = "/cast Shuriken Tornado", conditions = "can_cast:Shuriken Tornado" },
+            
+            -- Core Rotation
+            { command = "/cast Eviscerate", conditions = "can_cast:Eviscerate" },
+            { command = "/cast Shadowstrike", conditions = "can_cast:Shadowstrike" },
+            { command = "/cast Backstab", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }

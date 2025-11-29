@@ -2,54 +2,31 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-# Current Season Dungeons (TWW S1)
+# Season 3 Dungeons (TWW S3)
 CURRENT_SEASON = [
-    {"name": "The Stonevault", "url": "https://www.icy-veins.com/wow/the-stonevault-dungeon-guide"},
-    {"name": "The Dawnbreaker", "url": "https://www.icy-veins.com/wow/the-dawnbreaker-dungeon-guide"},
-    {"name": "Mists of Tirna Scithe", "url": "https://www.icy-veins.com/wow/mists-of-tirna-scithe-dungeon-guide"},
-    {"name": "Siege of Boralus", "url": "https://www.icy-veins.com/wow/siege-of-boralus-dungeon-guide"},
-    {"name": "Grim Batol", "url": "https://www.icy-veins.com/wow/grim-batol-dungeon-guide"},
-    {"name": "City of Threads", "url": "https://www.icy-veins.com/wow/city-of-threads-dungeon-guide"},
     {"name": "Ara-Kara, City of Echoes", "url": "https://www.icy-veins.com/wow/ara-kara-city-of-echoes-dungeon-guide"},
-    {"name": "Cinderbrew Meadery", "url": "https://www.icy-veins.com/wow/cinderbrew-meadery-dungeon-guide"},
+    {"name": "The Dawnbreaker", "url": "https://www.icy-veins.com/wow/the-dawnbreaker-dungeon-guide"},
+    {"name": "Eco-Dome Al'dani", "url": "https://www.icy-veins.com/wow/eco-dome-aldani-dungeon-guide"},
+    {"name": "Halls of Atonement", "url": "https://www.icy-veins.com/wow/halls-of-atonement-dungeon-guide"},
+    {"name": "Operation: Floodgate", "url": "https://www.icy-veins.com/wow/operation-floodgate-dungeon-guide"},
+    {"name": "Priory of the Sacred Flame", "url": "https://www.icy-veins.com/wow/priory-of-the-sacred-flame-dungeon-guide"},
+    {"name": "Tazavesh: Streets of Wonder", "url": "https://www.icy-veins.com/wow/tazavesh-the-veiled-market-dungeon-guide"}, # Often one guide for both
+    {"name": "Tazavesh: So'leah's Gambit", "url": "https://www.icy-veins.com/wow/tazavesh-the-veiled-market-dungeon-guide"},
 ]
 
-# Timewalking & Other Dungeons
-TIMEWALKING = [
-    # Burning Crusade
-    {"name": "The Arcatraz", "url": "https://www.icy-veins.com/wow/the-arcatraz-dungeon-guide"},
-    {"name": "Black Morass", "url": "https://www.icy-veins.com/wow/black-morass-dungeon-guide"},
-    {"name": "The Mechanar", "url": "https://www.icy-veins.com/wow/the-mechanar-dungeon-guide"},
-    
-    # Wrath
-    {"name": "Halls of Lightning", "url": "https://www.icy-veins.com/wow/halls-of-lightning-dungeon-guide"},
-    {"name": "Pit of Saron", "url": "https://www.icy-veins.com/wow/pit-of-saron-dungeon-guide"},
-    
-    # Cataclysm
-    {"name": "End Time", "url": "https://www.icy-veins.com/wow/end-time-dungeon-guide"},
-    {"name": "Well of Eternity", "url": "https://www.icy-veins.com/wow/well-of-eternity-dungeon-guide"},
-    
-    # MoP
-    {"name": "Gate of the Setting Sun", "url": "https://www.icy-veins.com/wow/gate-of-the-setting-sun-dungeon-guide"},
-    {"name": "Siege of Niuzao Temple", "url": "https://www.icy-veins.com/wow/siege-of-niuzao-temple-dungeon-guide"},
-    
-    # WoD
-    {"name": "Iron Docks", "url": "https://www.icy-veins.com/wow/iron-docks-dungeon-guide"},
-    {"name": "Grimrail Depot", "url": "https://www.icy-veins.com/wow/grimrail-depot-dungeon-guide"},
-    
-    # Legion
-    {"name": "Court of Stars", "url": "https://www.icy-veins.com/wow/court-of-stars-dungeon-guide"},
-    {"name": "Black Rook Hold", "url": "https://www.icy-veins.com/wow/black-rook-hold-dungeon-guide"},
-]
+DUNGEONS = CURRENT_SEASON
 
-DUNGEONS = CURRENT_SEASON + TIMEWALKING
-
-# Current Raid (TWW S1)
+# Season 3 Raid
 RAIDS = [
-    {"name": "Nerub-ar Palace", "url": "https://www.icy-veins.com/wow/nerubar-palace-raid-guide"},
+    {"name": "Manaforge Omega", "url": "https://www.icy-veins.com/wow/manaforge-omega-raid-guide"},
 ]
 
-OUTPUT_FILE = "db/Interrupts.lua"
+# World Bosses (TWW)
+WORLD_BOSSES = [
+    {"name": "Khaz Algar (World)", "url": "https://www.icy-veins.com/wow/the-war-within-world-bosses-guide"},
+]
+
+OUTPUT_FILE = "skillweaver/db/Interrupts.lua"
 
 def fetch_page(url):
     print(f"Fetching {url}...")
@@ -117,7 +94,7 @@ def parse_interrupts(html, content_name):
     
     return interrupts
 
-def generate_lua(dungeons, raids):
+def generate_lua(dungeons, raids, world_bosses):
     lua_content = """local ADDON_NAME, SkillWeaver = ...
 -- GENERATED FILE - DO NOT EDIT MANUALLY
 -- Scraped from Icy Veins Dungeon/Raid Guides
@@ -127,7 +104,7 @@ SkillWeaver.Interrupts = SkillWeaver.Interrupts or {}
 """
     
     # Process Dungeons
-    lua_content += "-- Mythic+ Dungeons\n"
+    lua_content += "-- Mythic+ Dungeons (Season 3)\n"
     for dungeon in dungeons:
         html = fetch_page(dungeon['url'])
         data = parse_interrupts(html, dungeon['name'])
@@ -154,7 +131,7 @@ SkillWeaver.Interrupts = SkillWeaver.Interrupts or {}
             
             lua_content += '}\n\n'
         else:
-            print(f"  No interrupts found")
+            print(f"  No interrupts found for {dungeon['name']}")
     
     # Process Raids
     lua_content += "-- Raids\n"
@@ -184,12 +161,42 @@ SkillWeaver.Interrupts = SkillWeaver.Interrupts or {}
             
             lua_content += '}\n\n'
         else:
-            print(f"  No interrupts found")
+            print(f"  No interrupts found for {raid['name']}")
+
+    # Process World Bosses
+    lua_content += "-- World Bosses\n"
+    for boss in world_bosses:
+        html = fetch_page(boss['url'])
+        data = parse_interrupts(html, boss['name'])
+        
+        if data:
+            print(f"  Found {len(data)} interrupt targets")
+            lua_content += f'SkillWeaver.Interrupts["{boss["name"]}"] = {{\n'
+            
+            for mob, spells in data.items():
+                if spells['priority'] or spells['optional']:
+                    lua_content += f'    ["{mob}"] = {{\n'
+                    
+                    if spells['priority']:
+                        lua_content += '        priority = {'
+                        lua_content += ', '.join([f'"{s}"' for s in spells['priority']])
+                        lua_content += '},\n'
+                    
+                    if spells['optional']:
+                        lua_content += '        optional = {'
+                        lua_content += ', '.join([f'"{s}"' for s in spells['optional']])
+                        lua_content += '},\n'
+                    
+                    lua_content += '    },\n'
+            
+            lua_content += '}\n\n'
+        else:
+            print(f"  No interrupts found for {boss['name']}")
     
     with open(OUTPUT_FILE, "w") as f:
         f.write(lua_content)
     print(f"\nGenerated {OUTPUT_FILE}")
 
 if __name__ == "__main__":
-    print("=== Scraping Dungeon Guides ===")
-    generate_lua(DUNGEONS, RAIDS)
+    print("=== Scraping Season 3 Guides ===")
+    generate_lua(DUNGEONS, RAIDS, WORLD_BOSSES)

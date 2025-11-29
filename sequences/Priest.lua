@@ -77,8 +77,19 @@ SkillWeaver.Sequences[PRIEST_DISC] = {
                 { command = "/cast [harm] Smite", conditions = "lowest_ally_health > 90" },
             },
             aoe = {},
-            steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            { command = "/cast Power Word: Shield", conditions = "can_cast:Power Word: Shield" },
+            { command = "/cast Penance", conditions = "can_cast:Penance" },
+            { command = "/cast Shadow Mend", conditions = "can_cast:Shadow Mend" },
+            { command = "/cast Purge the Wicked", conditions = "can_cast:Purge the Wicked" },
+            { command = "/cast Smite", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -155,6 +166,20 @@ SkillWeaver.Sequences[PRIEST_HOLY] = {
             aoe = {},
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            { command = "/cast Holy Word: Serenity", conditions = "can_cast:Holy Word: Serenity" },
+            { command = "/cast Holy Word: Sanctify", conditions = "can_cast:Holy Word: Sanctify" },
+            { command = "/cast Circle of Healing", conditions = "can_cast:Circle of Healing" },
+            { command = "/cast Flash Heal", conditions = "can_cast:Flash Heal" },
+            { command = "/cast Heal", conditions = "true" },
+            { command = "/cast Holy Fire", conditions = "can_cast:Holy Fire" },
+            { command = "/cast Smite", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
 
@@ -259,5 +284,33 @@ SkillWeaver.Sequences[PRIEST_SHADOW] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = {
+        type = "Priority",
+        st = {
+            -- Multi-DoT: Cycle if Vampiric Touch is up
+            { command = "/cycle", conditions = "debuff:Vampiric Touch" },
+            
+            -- Hero Talents & Cooldowns
+            { command = "/cast Void Eruption", conditions = "can_cast:Void Eruption" },
+            { command = "/cast Dark Ascension", conditions = "can_cast:Dark Ascension" },
+            { command = "/cast Void Torrent", conditions = "can_cast:Void Torrent" },
+            { command = "/cast Shadow Crash", conditions = "can_cast:Shadow Crash" },
+            { command = "/cast Mindgames", conditions = "can_cast:Mindgames" },
+            { command = "/cast Halo", conditions = "can_cast:Halo" },
+            { command = "/cast Divine Star", conditions = "can_cast:Divine Star" },
+            
+            -- Spenders & Generators
+            { command = "/cast Devouring Plague", conditions = "can_cast:Devouring Plague" },
+            { command = "/cast Mind Blast", conditions = "can_cast:Mind Blast" },
+            { command = "/cast Shadow Word: Death", conditions = "can_cast:Shadow Word: Death" },
+            { command = "/cast Vampiric Touch", conditions = "can_cast:Vampiric Touch" },
+            { command = "/cast Shadow Word: Pain", conditions = "can_cast:Shadow Word: Pain" },
+            { command = "/cast Mind Flay: Insanity", conditions = "can_cast:Mind Flay: Insanity" }, -- Proc
+            { command = "/cast Mind Flay", conditions = "true" },
+            { command = "/cast Mind Spike", conditions = "can_cast:Mind Spike" }, -- Alt filler
+        },
+        aoe = {},
+        steps = {}
     }
 }

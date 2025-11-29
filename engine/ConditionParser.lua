@@ -140,6 +140,18 @@ function Parser.ResolveToken(token)
         return 0
     end
 
+    -- Content Type detection: content(RAID|MYTHIC_PLUS|PVP|DELVE)
+    if token:find("content%(") == 1 then
+        local contentType = token:match("content%((.+)%)")
+        if contentType and SkillWeaver.ContentDetector then
+            return SkillWeaver.ContentDetector:IsType(contentType) and 1 or 0
+        end
+        return 0
+    end
+
+    --------------------------------------------------------
+    -- Cooldown: cooldown:SpellName
+    --------------------------------------------------------
     --------------------------------------------------------
     -- Cooldown: cooldown:SpellName
     --------------------------------------------------------
@@ -149,6 +161,20 @@ function Parser.ResolveToken(token)
         if not start then return 0 end
         local remain = (start + dur) - GetTime()
         return remain > 0 and remain or 0
+    end
+
+    --------------------------------------------------------
+    -- Usable Check: can_cast:SpellName (Patch 12.0 Fix)
+    --------------------------------------------------------
+    -- Replaces direct Health/Rage checks. 
+    -- "can_cast:Execute" returns 1 if Execute is usable (Target < 20% or Proc).
+    if token:find("can_cast:") == 1 then
+        local spell = token:sub(10)
+        local usable, noMana = IsUsableSpell(spell)
+        if usable and not noMana then
+            return 1
+        end
+        return 0
     end
     
     --------------------------------------------------------
@@ -196,6 +222,38 @@ function Parser.ResolveToken(token)
         
         -- Fallback: kick anything interruptible if not in database
         return 1
+    end
+
+    --------------------------------------------------------
+    -- Interrupt Check: interruptible (Any spell)
+    --------------------------------------------------------
+    if token == "interruptible" then
+        if not UnitExists("target") then return 0 end
+        local _, _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo("target")
+        if not notInterruptible then return 1 end
+        local _, _, _, _, _, _, _, notInterruptible = UnitChannelInfo("target")
+        if not notInterruptible then return 1 end
+        return 0
+    end
+
+    if token == "racial" then
+        if SkillWeaver.Racials and SkillWeaver.Racials.ShouldUseRacial then
+            local should, spellId = SkillWeaver.Racials.ShouldUseRacial()
+            if should then
+                return 1
+            end
+        end
+        return 0
+    end
+
+    if token == "cc_break" then
+        if SkillWeaver.LossOfControl and SkillWeaver.LossOfControl.ShouldBreakCC then
+            local should, id, type = SkillWeaver.LossOfControl.ShouldBreakCC()
+            if should then
+                return 1
+            end
+        end
+        return 0
     end
     
     --------------------------------------------------------

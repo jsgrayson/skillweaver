@@ -159,5 +159,26 @@ SkillWeaver.Sequences[MAGE_FROST] = {
             },
             steps = {}
         }
+    },
+    ["Midnight"] = { -- Visual Weaver Mode
+        type = "Priority",
+        st = {
+            -- Cooldowns & Talents
+            { command = "/cast Icy Veins", conditions = "can_cast:Icy Veins" },
+            { command = "/cast Frozen Orb", conditions = "can_cast:Frozen Orb" },
+            { command = "/cast Comet Storm", conditions = "can_cast:Comet Storm" },
+            { command = "/cast Ray of Frost", conditions = "can_cast:Ray of Frost" },
+            { command = "/cast Glacial Spike", conditions = "can_cast:Glacial Spike" },
+            { command = "/cast Ice Nova", conditions = "can_cast:Ice Nova" },
+            { command = "/cast Cone of Cold", conditions = "can_cast:Cone of Cold" },
+            { command = "/cast Ebonbolt", conditions = "can_cast:Ebonbolt" },
+            
+            -- Core Rotation
+            { command = "/cast Flurry", conditions = "can_cast:Flurry" },
+            { command = "/cast Ice Lance", conditions = "can_cast:Ice Lance" },
+            { command = "/cast Frostbolt", conditions = "true" },
+        },
+        aoe = {},
+        steps = {}
     }
 }
