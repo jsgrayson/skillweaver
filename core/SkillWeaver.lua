@@ -190,11 +190,16 @@ SlashCmdList["SKILLWEAVER"] = function(msg)
         else
             SkillWeaver.BattleRes:Toggle() -- Toggle current state
         end
+    elseif cmd == "stockcheck" or cmd == "stock" then
+        if SkillWeaver.StockManager then
+            SkillWeaver.StockManager:PerformCheck()
+        end
     else
         print("SkillWeaver Commands:")
         print("  /sw load [Raid|MythicPlus|PvP] - Import talent loadout")
         print("  /sw equip [Raid|M+|PvP|Delve|Fishing|Speed] - Equip best gear for content")
         print("  /sw battleres [on|off] - Toggle auto battle res")
+        print("  /sw stockcheck - Manual consumable stock check")
     end
 end
 
