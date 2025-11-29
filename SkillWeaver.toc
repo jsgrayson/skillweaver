@@ -45,6 +45,7 @@ Data/StatWeights.lua
 engine/ConditionParser.lua
 engine/Racials.lua
 engine/LossOfControl.lua
+engine/BattleRes.lua
 engine/ResourceCheck.lua
 engine/CooldownLogic.lua
 engine/SequenceEngine.lua

@@ -310,11 +310,6 @@ end
 function MinimapButton:ToggleBattleRes()
     SkillWeaver.Settings.utilities.autoBattleRes = not SkillWeaver.Settings.utilities.autoBattleRes
     
-    -- Sync with manager
-    if SkillWeaver.BattleResManager then
-        SkillWeaver.BattleResManager:Toggle(SkillWeaver.Settings.utilities.autoBattleRes)
-    end
-    
     local status = SkillWeaver.Settings.utilities.autoBattleRes and "|cff00FF00ENABLED|r" or "|cffFF0000DISABLED|r"
     print("|cff00FF00SkillWeaver|r: Auto Battle Res " .. status)
     PlaySound(SkillWeaver.Settings.utilities.autoBattleRes and SOUNDKIT.ACHIEVEMENT_MENU_OPEN or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_SOUND)

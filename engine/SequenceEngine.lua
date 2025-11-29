@@ -76,6 +76,20 @@ function Engine:Execute(cmd)
         end
         return -- CC Break requested but not needed/usable
     end
+    
+    if cmd == "battle_res" then
+        if SkillWeaver.BattleRes and SkillWeaver.BattleRes.GetBestResTarget then
+            local unit, role, name = SkillWeaver.BattleRes:GetBestResTarget()
+            if unit then
+                local spellName = SkillWeaver.BattleRes:GetSpellName()
+                if spellName then
+                    RunMacroText("/cast [@" .. unit .. "] " .. spellName)
+                    return
+                end
+            end
+        end
+        return
+    end
 
     RunMacroText(cmd)
 end

@@ -182,12 +182,22 @@ SlashCmdList["SKILLWEAVER"] = function(msg)
         else
             print("Usage: /sw equip [Raid|M+|PvP|Delve|Fishing|Speed]")
         end
+    elseif cmd == "battleres" then
+        if arg == "on" then
+            SkillWeaver.BattleRes:Toggle(true)
+        elseif arg == "off" then
+            SkillWeaver.BattleRes:Toggle(false)
+        else
+            SkillWeaver.BattleRes:Toggle() -- Toggle current state
+        end
     else
         print("SkillWeaver Commands:")
         print("  /sw load [Raid|MythicPlus|PvP] - Import talent loadout")
         print("  /sw equip [Raid|M+|PvP|Delve|Fishing|Speed] - Equip best gear for content")
+        print("  /sw battleres [on|off] - Toggle auto battle res")
     end
 end
+
 
 ---------------------------------------------------------
 -- Visual Loop (AI Camera Support)

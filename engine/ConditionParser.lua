@@ -245,11 +245,27 @@ function Parser.ResolveToken(token)
         end
         return 0
     end
-
+    
+    --------------------------------------------------------
+    -- CC Break: cc_break()
+    --------------------------------------------------------
     if token == "cc_break" then
         if SkillWeaver.LossOfControl and SkillWeaver.LossOfControl.ShouldBreakCC then
             local should, id, type = SkillWeaver.LossOfControl.ShouldBreakCC()
             if should then
+                return 1
+            end
+        end
+        return 0
+    end
+    
+    --------------------------------------------------------
+    -- Battle Res: battle_res()
+    --------------------------------------------------------
+    if token == "battle_res" then
+        if SkillWeaver.BattleRes and SkillWeaver.BattleRes.GetBestResTarget then
+            local unit, role, name = SkillWeaver.BattleRes:GetBestResTarget()
+            if unit then
                 return 1
             end
         end
