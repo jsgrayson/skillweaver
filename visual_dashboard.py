@@ -42,6 +42,10 @@ def shopping_list_page():
 def junk_page():
     return render_template('junk_manager.html')
 
+@app.route('/encounter')
+def encounter_page():
+    return render_template('encounter.html')
+
 @app.route('/api/status')
 def get_status():
     return jsonify({
@@ -433,6 +437,28 @@ def get_junk():
             junk_list.append(item)
             
     return jsonify(junk_list)
+
+@app.route('/api/encounter', methods=['POST'])
+def get_encounter():
+    data = request.json
+    instance = data.get('instance', '')
+    boss = data.get('boss', '')
+    
+    try:
+        sys.path.append('/Users/jgrayson/Documents/holocron/scrapers')
+        from icy_veins import IcyVeinsScraper
+        
+        # Create scraper (class/spec don't matter for encounter scraping)
+        scraper = IcyVeinsScraper("warrior", "arms")
+        encounter_data = scraper.fetch_encounter(instance, boss)
+        
+        return jsonify(encounter_data)
+    
+    except Exception as e:
+        print(f"Error in encounter API: {e}")
+        return jsonify({"error": str(e)}), 500
+
+def gen_preview():
     """Generates a MJPEG stream of the screen with overlays."""
     with mss.mss() as sct:
         while True:
