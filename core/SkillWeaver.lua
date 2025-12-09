@@ -218,30 +218,53 @@ visualFrame:SetScript("OnUpdate", function(self, elapsed)
     
     if not SkillWeaver.ActiveSequence then return end
     
-    -- Ask Engine what the best spell is
-    local cmd = SkillWeaver.Engine.Sequence:EvaluateNext(SkillWeaver.ActiveSequence)
+    -- 1. Evaluate Single Target (ST)
+    local cmdST = SkillWeaver.Engine.Sequence:EvaluateNext(SkillWeaver.ActiveSequence)
+    local iconST, spellST = nil, nil
     
-    -- Extract Spell Name/Icon from command
-    -- Command is like "/cast Rampage"
-    -- Handle Cycle/Targeting
-    if cmd:match("^/cycle") or cmd:match("^/targetenemy") then
-        -- Pass a placeholder icon and the command so VisualCue triggers the Green Light
-        SkillWeaver.VisualCue:Update("Interface\\Icons\\INV_Misc_QuestionMark", "/cycle")
-        return
+    if cmdST then
+        if cmdST:match("^/cycle") or cmdST:match("^/targetenemy") then
+            iconST = "Interface\\Icons\\INV_Misc_QuestionMark"
+            spellST = "/cycle"
+        else
+            local spell = cmdST:match("/cast%s+(.+)")
+            if spell then
+                spell = spell:gsub("%[.-%]", ""):match("^%s*(.-)%s*$")
+                local name, _, icon = GetSpellInfo(spell)
+                iconST = icon
+                spellST = name or spell
+            end
+        end
     end
 
-    -- Handle Cast
-    local spell = cmd:match("/cast%s+(.+)")
-    if spell then
-        -- Strip conditionals like [target=focus]
-        spell = spell:gsub("%[.-%]", ""):match("^%s*(.-)%s*$") -- Remove brackets and trim
+    -- 2. Evaluate AoE (if available)
+    local cmdAoE = nil
+    local iconAoE, spellAoE = nil, nil
+    
+    if SkillWeaver.ActiveSequence.aoe and #SkillWeaver.ActiveSequence.aoe > 0 then
+        -- Temporarily swap 'steps' or 'st' with 'aoe' for evaluation
+        -- Actually, EvaluateNext checks 'st' or 'steps'. We need to trick it or pass a dummy sequence.
+        -- Let's create a dummy sequence object for AoE evaluation
+        local aoeSeq = {
+            type = SkillWeaver.ActiveSequence.type,
+            st = SkillWeaver.ActiveSequence.aoe, -- Put AoE steps in 'st' slot for EvaluateNext
+            steps = SkillWeaver.ActiveSequence.aoe
+        }
+        cmdAoE = SkillWeaver.Engine.Sequence:EvaluateNext(aoeSeq)
         
-        local name, _, icon = GetSpellInfo(spell)
-        -- Use the localized name from GetSpellInfo if possible, otherwise the command string
-        SkillWeaver.VisualCue:Update(icon, name or spell)
-    else
-        SkillWeaver.VisualCue:Update(nil, nil)
+        if cmdAoE then
+            local spell = cmdAoE:match("/cast%s+(.+)")
+            if spell then
+                spell = spell:gsub("%[.-%]", ""):match("^%s*(.-)%s*$")
+                local name, _, icon = GetSpellInfo(spell)
+                iconAoE = icon
+                spellAoE = name or spell
+            end
+        end
     end
+
+    -- Update Visual Cue with BOTH
+    SkillWeaver.VisualCue:Update(iconST, spellST, iconAoE, spellAoE)
 end)
 
 -- Event Frame for Data Export

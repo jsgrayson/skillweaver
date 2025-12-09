@@ -88,7 +88,14 @@ SkillWeaver.Sequences[PRIEST_DISC] = {
             { command = "/cast Purge the Wicked", conditions = "can_cast:Purge the Wicked" },
             { command = "/cast Smite", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Power Word: Radiance", conditions = "can_cast:Power Word: Radiance" },
+            { command = "/cast Purge the Wicked", conditions = "can_cast:Purge the Wicked" },
+            { command = "/cast Shadow Covenant", conditions = "can_cast:Shadow Covenant" },
+            { command = "/cast Halo", conditions = "can_cast:Halo" },
+            { command = "/cast Divine Star", conditions = "can_cast:Divine Star" },
+            { command = "/cast Holy Nova", conditions = "true" },
+        },
         steps = {}
     }
 }
@@ -178,7 +185,12 @@ SkillWeaver.Sequences[PRIEST_HOLY] = {
             { command = "/cast Holy Fire", conditions = "can_cast:Holy Fire" },
             { command = "/cast Smite", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Holy Word: Sanctify", conditions = "can_cast:Holy Word: Sanctify" },
+            { command = "/cast Circle of Healing", conditions = "can_cast:Circle of Healing" },
+            { command = "/cast Prayer of Healing", conditions = "can_cast:Prayer of Healing" },
+            { command = "/cast Holy Nova", conditions = "true" },
+        },
         steps = {}
     }
 }

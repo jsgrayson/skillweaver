@@ -178,7 +178,16 @@ SkillWeaver.Sequences[MAGE_FROST] = {
             { command = "/cast Ice Lance", conditions = "can_cast:Ice Lance" },
             { command = "/cast Frostbolt", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Icy Veins", conditions = "can_cast:Icy Veins" },
+            { command = "/cast Frozen Orb", conditions = "can_cast:Frozen Orb" },
+            { command = "/cast Comet Storm", conditions = "can_cast:Comet Storm" },
+            { command = "/cast Blizzard", conditions = "can_cast:Blizzard" },
+            { command = "/cast Ice Nova", conditions = "can_cast:Ice Nova" },
+            { command = "/cast Cone of Cold", conditions = "can_cast:Cone of Cold" },
+            { command = "/cast Ice Lance", conditions = "can_cast:Ice Lance" },
+            { command = "/cast Frostbolt", conditions = "true" },
+        },
         steps = {}
     }
 }

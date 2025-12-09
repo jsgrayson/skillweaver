@@ -58,7 +58,15 @@ SkillWeaver.Sequences[PALADIN_PROT] = {
             { command = "/cast Blessed Hammer", conditions = "true" },
             { command = "/cast Consecration", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Eye of Tyr", conditions = "can_cast:Eye of Tyr" },
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Avenger's Shield", conditions = "can_cast:Avenger's Shield" },
+            { command = "/cast Shield of the Righteous", conditions = "can_cast:Shield of the Righteous" },
+            { command = "/cast Consecration", conditions = "can_cast:Consecration" },
+            { command = "/cast Blessed Hammer", conditions = "can_cast:Blessed Hammer" },
+            { command = "/cast Judgment", conditions = "true" },
+        },
         steps = {}
     }
 }
@@ -173,7 +181,17 @@ SkillWeaver.Sequences[PALADIN_RET] = {
             { command = "/cast Hammer of Wrath", conditions = "can_cast:Hammer of Wrath" },
             { command = "/cast Crusader Strike", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Crusade", conditions = "can_cast:Crusade" },
+            { command = "/cast Avenging Wrath", conditions = "can_cast:Avenging Wrath" },
+            { command = "/cast Wake of Ashes", conditions = "can_cast:Wake of Ashes" },
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Hammer of Light", conditions = "can_cast:Hammer of Light" },
+            { command = "/cast Divine Storm", conditions = "can_cast:Divine Storm" },
+            { command = "/cast Judgment", conditions = "can_cast:Judgment" },
+            { command = "/cast Blade of Justice", conditions = "can_cast:Blade of Justice" },
+            { command = "/cast Crusader Strike", conditions = "true" },
+        },
         steps = {}
     }
 }
@@ -226,7 +244,15 @@ SkillWeaver.Sequences[PALADIN_HOLY] = {
             { command = "/cast Hammer of Wrath", conditions = "can_cast:Hammer of Wrath" },
             { command = "/cast Crusader Strike", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Divine Toll", conditions = "can_cast:Divine Toll" },
+            { command = "/cast Holy Prism", conditions = "can_cast:Holy Prism" },
+            { command = "/cast Light's Hammer", conditions = "can_cast:Light's Hammer" },
+            { command = "/cast Light of Dawn", conditions = "can_cast:Light of Dawn" },
+            { command = "/cast Holy Shock", conditions = "can_cast:Holy Shock" },
+            { command = "/cast Judgment", conditions = "can_cast:Judgment" },
+            { command = "/cast Crusader Strike", conditions = "true" },
+        },
         steps = {}
     }
 }

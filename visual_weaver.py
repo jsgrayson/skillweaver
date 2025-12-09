@@ -5,6 +5,7 @@ import time
 import os
 import sys
 import threading
+import cv2  # OpenCV for Computer Vision
 from pynput import keyboard
 from pynput.keyboard import Key, Controller
 
@@ -14,12 +15,14 @@ DEFAULT_CONFIG = {
     "trigger_key": "space",
     "healer_mode": False,
     "regions": {
-        "dps_icon": {"top": 500, "left": 500, "width": 20, "height": 20},
+        "dps_icon": {"top": 500, "left": 500, "width": 20, "height": 20},      # ST Cue
+        "dps_icon_aoe": {"top": 500, "left": 580, "width": 20, "height": 20},  # AoE Cue (Offset by ~80px)
         "party1": {"top": 200, "left": 100, "width": 100, "height": 30},
         "party2": {"top": 240, "left": 100, "width": 100, "height": 30},
         "party3": {"top": 280, "left": 100, "width": 100, "height": 30},
         "party4": {"top": 320, "left": 100, "width": 100, "height": 30},
-        "party5": {"top": 360, "left": 100, "width": 100, "height": 30}
+        "party5": {"top": 360, "left": 100, "width": 100, "height": 30},
+        "nameplates": {"top": 100, "left": 0, "width": 1920, "height": 800} # Scan area for nameplates
     },
     "key_map": {
         # Blue Channel -> Key
@@ -53,6 +56,8 @@ class VisualWeaver:
         self.trigger_pressed = False
         self.keyboard_controller = Controller()
         self.thread = None
+        self.target_count = 0
+        self.aoe_mode = False
         self.load_config()
 
     def load_config(self):
@@ -144,29 +149,123 @@ class VisualWeaver:
                 
         return best_key, best_mod
 
+    def scan_nameplates(self, sct):
+        """
+        Scans the screen for enemy nameplates (Red Bars) using OpenCV.
+        Returns the count of active targets.
+        """
+        region = self.config["regions"].get("nameplates", {"top": 100, "left": 0, "width": 1920, "height": 800})
+        monitor = {
+            "top": int(region["top"]), 
+            "left": int(region["left"]), 
+            "width": int(region["width"]), 
+            "height": int(region["height"])
+        }
+        
+        # Capture screen
+        img = np.array(sct.grab(monitor))
+        
+        # Convert to HSV
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR) # Remove Alpha
+        hsv = cv2.cvtColor(hsv, cv2.COLOR_BGR2HSV)
+        
+        # Define Red Color Range (Enemy Nameplates)
+        # Red wraps around 0/180 in HSV
+        lower_red1 = np.array([0, 120, 70])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([170, 120, 70])
+        upper_red2 = np.array([180, 255, 255])
+        
+        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+        mask = mask1 + mask2
+        
+        # Find Contours
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        count = 0
+        for cnt in contours:
+            area = cv2.contourArea(cnt)
+            # Filter small noise (health bars are usually significant size)
+            if area > 100: 
+                x, y, w, h = cv2.boundingRect(cnt)
+                # Filter by aspect ratio (Health bars are wide rectangles)
+                aspect_ratio = float(w)/h
+                if aspect_ratio > 3: 
+                    count += 1
+                    
+        return count
+
     def run_loop(self):
         print("Visual Weaver Loop Started 👁️")
+        last_scan_time = 0
+        
         with mss.mss() as sct:
             while self.running:
+                current_time = time.time()
+                
+                # 1. Context Awareness (Nameplate Scan) - Every 0.5s
+                if not self.paused and (current_time - last_scan_time > 0.5):
+                    self.target_count = self.scan_nameplates(sct)
+                    last_scan_time = current_time
+                    
+                    # Auto-Switch Logic
+                    new_aoe_mode = self.target_count >= 3
+                    if new_aoe_mode != self.aoe_mode:
+                        self.aoe_mode = new_aoe_mode
+                        mode_str = "AoE (Multi-Target)" if self.aoe_mode else "ST (Single-Target)"
+                        print(f"Context Shift: {self.target_count} Targets -> {mode_str}")
+
+                # 2. Rotation Execution
                 if not self.paused and self.trigger_pressed:
-                    region = self.config["regions"]["dps_icon"]
-                    monitor = {
-                        "top": int(region["top"]), 
-                        "left": int(region["left"]), 
-                        "width": int(region["width"]), 
-                        "height": int(region["height"])
-                    }
+                # 2. Rotation Execution
+                if not self.paused and self.trigger_pressed:
+                    # Determine which cue to read
+                    target_region = "dps_icon" # Default ST
                     
-                    img = np.array(sct.grab(monitor))
-                    cy, cx = region["height"] // 2, region["width"] // 2
-                    pixel = img[cy, cx]
-                    b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
+                    if self.aoe_mode:
+                        # Try AoE first
+                        region = self.config["regions"].get("dps_icon_aoe", self.config["regions"]["dps_icon"])
+                        monitor = {
+                            "top": int(region["top"]), 
+                            "left": int(region["left"]), 
+                            "width": int(region["width"]), 
+                            "height": int(region["height"])
+                        }
+                        img = np.array(sct.grab(monitor))
+                        cy, cx = region["height"] // 2, region["width"] // 2
+                        pixel = img[cy, cx]
+                        b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
+                        
+                        key_to_press, modifier = self.get_action_from_color(r, g, b)
+                        
+                        if key_to_press:
+                            # Found valid AoE key
+                            pass 
+                        else:
+                            # Fallback to ST
+                            # print("AoE Cue empty, falling back to ST")
+                            target_region = "dps_icon"
                     
-                    key_to_press, modifier = self.get_action_from_color(r, g, b)
-                    
+                    if target_region == "dps_icon":
+                        region = self.config["regions"]["dps_icon"]
+                        monitor = {
+                            "top": int(region["top"]), 
+                            "left": int(region["left"]), 
+                            "width": int(region["width"]), 
+                            "height": int(region["height"])
+                        }
+                        img = np.array(sct.grab(monitor))
+                        cy, cx = region["height"] // 2, region["width"] // 2
+                        pixel = img[cy, cx]
+                        b, g, r = int(pixel[0]), int(pixel[1]), int(pixel[2])
+                        
+                        key_to_press, modifier = self.get_action_from_color(r, g, b)
+
                     if key_to_press:
                         mod_str = f"{modifier}+" if modifier else ""
-                        print(f"Color ({r},{g},{b}) -> {mod_str}{key_to_press}")
+                        mode_label = "AoE" if (self.aoe_mode and target_region != "dps_icon") else "ST"
+                        print(f"[{mode_label}] Color ({r},{g},{b}) -> {mod_str}{key_to_press}")
                         
                         if modifier:
                             self.keyboard_controller.press(modifier)

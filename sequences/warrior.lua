@@ -274,7 +274,14 @@ SkillWeaver.Sequences[WARRIOR_PROT] = {
             { command = "/cast Execute", conditions = "can_cast:Execute" },
             { command = "/cast Devastate", conditions = "true" },
         },
-        aoe = {},
+        aoe = {
+            { command = "/cast Ravager", conditions = "can_cast:Ravager" },
+            { command = "/cast Shockwave", conditions = "can_cast:Shockwave" },
+            { command = "/cast Thunder Clap", conditions = "can_cast:Thunder Clap" },
+            { command = "/cast Revenge", conditions = "can_cast:Revenge" },
+            { command = "/cast Shield Slam", conditions = "can_cast:Shield Slam" },
+            { command = "/cast Devastate", conditions = "true" },
+        },
         steps = {}
     }
 }

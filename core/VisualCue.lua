@@ -66,16 +66,69 @@ end
 
 -- ... Event Listener (unchanged) ...
 
-function VisualCue:Update(icon, spellName)
-    if not icon then
+function VisualCue:Update(iconST, spellST, iconAoE, spellAoE)
+    -- ST CUE (Left)
+    if not iconST then
         frame:Hide()
         dataPixel:SetColorTexture(0, 0, 0, 1)
-        return
+    else
+        frame:Show()
+        texture:SetTexture(iconST)
+        self:RenderPixel(dataPixel, texture, spellST)
+    end
+
+    -- AOE CUE (Right)
+    if not frame.textureAoE then
+        -- Create AoE Texture/Pixel if missing
+        frame.textureAoE = frame:CreateTexture(nil, "BACKGROUND")
+        frame.textureAoE:SetSize(64, 64)
+        frame.textureAoE:SetPoint("LEFT", texture, "RIGHT", 10, 0)
+        
+        frame.dataPixelAoE = frame:CreateTexture(nil, "OVERLAY")
+        frame.dataPixelAoE:SetSize(16, 16)
+        frame.dataPixelAoE:SetPoint("TOPLEFT", frame.textureAoE, "TOPLEFT", 0, 0)
+    end
+
+    if iconAoE then
+        frame.textureAoE:Show()
+        frame.textureAoE:SetTexture(iconAoE)
+        frame.dataPixelAoE:Show()
+        self:RenderPixel(frame.dataPixelAoE, frame.textureAoE, spellAoE)
+    else
+        frame.textureAoE:Hide()
+        frame.dataPixelAoE:Hide()
     end
     
-    frame:Show()
-    texture:SetTexture(icon)
+    -- Data Pixel 2: Health & Resource Telemetry (Offset from ST Pixel)
+    -- R = Player Health %
+    -- G = Target Health %
+    -- B = Resource % (Mana/Rage/Energy)
+    local playerHealth = UnitHealth("player") / UnitHealthMax("player")
+    local targetHealth = 0
+    if UnitExists("target") then
+        local maxHp = UnitHealthMax("target")
+        if maxHp > 0 then
+            targetHealth = UnitHealth("target") / maxHp
+        end
+    end
     
+    -- Resource Normalization (0-1)
+    local maxPower = UnitPowerMax("player")
+    local resource = 0
+    if maxPower > 0 then
+        resource = UnitPower("player") / maxPower
+    end
+    
+    -- Set Data Pixel 2 (Offset by 16px from ST pixel)
+    if not frame.dataPixel2 then
+        frame.dataPixel2 = frame:CreateTexture(nil, "OVERLAY")
+        frame.dataPixel2:SetSize(16, 16)
+        frame.dataPixel2:SetPoint("LEFT", dataPixel, "RIGHT", 0, 0)
+    end
+    frame.dataPixel2:SetColorTexture(playerHealth, targetHealth, resource, 1)
+end
+
+function VisualCue:RenderPixel(pixel, tex, spellName)
     -- Priority 1: Smart Interrupt (Red Light)
     local shouldKick = false
     if UnitExists("target") and UnitCanAttack("player", "target") then
@@ -101,24 +154,24 @@ function VisualCue:Update(icon, spellName)
 
     if shouldKick then
         -- RED LIGHT: Interrupt Immediately!
-        dataPixel:SetColorTexture(1, 0, 0, 1)
-        texture:SetVertexColor(1, 0.5, 0.5)
+        pixel:SetColorTexture(1, 0, 0, 1)
+        tex:SetVertexColor(1, 0.5, 0.5)
         return
     end
 
     -- Priority 2: Auto-Trinkets (Magenta Light)
     if SkillWeaver.AutoTrinkets and SkillWeaver.AutoTrinkets:ShouldUse() then
         -- MAGENTA LIGHT: Use Trinkets!
-        dataPixel:SetColorTexture(1, 0, 1, 1)
-        texture:SetVertexColor(1, 0.5, 1)
+        pixel:SetColorTexture(1, 0, 1, 1)
+        tex:SetVertexColor(1, 0.5, 1)
         return
     end
 
     -- Priority 3: Rotation
     if spellName == "/cycle" or spellName == "/targetenemy" then
         -- CYCLE SIGNAL: Cyan Light (0, 1, 1)
-        dataPixel:SetColorTexture(0, 1, 1, 1)
-        texture:SetVertexColor(0.5, 1, 1)
+        pixel:SetColorTexture(0, 1, 1, 1)
+        tex:SetVertexColor(0.5, 1, 1)
         
     elseif spellName and spellSlots[spellName] then
         local info = spellSlots[spellName]
@@ -135,41 +188,13 @@ function VisualCue:Update(icon, spellName)
         elseif mod == "ALT" then greenVal = 0.75    -- ~192
         end
         
-        dataPixel:SetColorTexture(0, greenVal, blueVal, 1)
-        texture:SetVertexColor(0.8, 0.8, 1) 
+        pixel:SetColorTexture(0, greenVal, blueVal, 1)
+        tex:SetVertexColor(0.8, 0.8, 1) 
     else
         -- Unknown spell
-        dataPixel:SetColorTexture(0, 0, 0, 1)
-        texture:SetVertexColor(1, 1, 1)
+        pixel:SetColorTexture(0, 0, 0, 1)
+        tex:SetVertexColor(1, 1, 1)
     end
-    
-    -- Data Pixel 2: Health & Resource Telemetry
-    -- R = Player Health %
-    -- G = Target Health %
-    -- B = Resource % (Mana/Rage/Energy)
-    local playerHealth = UnitHealth("player") / UnitHealthMax("player")
-    local targetHealth = 0
-    if UnitExists("target") then
-        local maxHp = UnitHealthMax("target")
-        if maxHp > 0 then
-            targetHealth = UnitHealth("target") / maxHp
-        end
-    end
-    
-    -- Resource Normalization (0-1)
-    local maxPower = UnitPowerMax("player")
-    local resource = 0
-    if maxPower > 0 then
-        resource = UnitPower("player") / maxPower
-    end
-    
-    -- Set Data Pixel 2 (Offset by 16px)
-    if not frame.dataPixel2 then
-        frame.dataPixel2 = frame:CreateTexture(nil, "OVERLAY")
-        frame.dataPixel2:SetSize(16, 16)
-        frame.dataPixel2:SetPoint("LEFT", dataPixel, "RIGHT", 0, 0)
-    end
-    frame.dataPixel2:SetColorTexture(playerHealth, targetHealth, resource, 1)
 end
 
 function VisualCue:Toggle(enable)

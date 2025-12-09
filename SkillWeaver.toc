@@ -1,78 +1,9 @@
-## Interface: 110000
-## Title: SkillWeaver
-## Notes: Advanced deterministic macro engine and rotation framework.
-## Author: SkillWeaver Team
-## Version: 1.0.0
-## SavedVariables: SkillWeaverDB, SkillWeaverTalents, SkillWeaverOptions
+## Interface: 100200
+## Title: Skillweaver
+## Notes: Advanced Macro Sequence Editor (GSE Replacement)
+## Author: You
+## Version: 0.1.0 Alpha
+## SavedVariables: SkillweaverDB
 
-# Libraries
-libs/LibStub/LibStub.lua
-libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
-
-# Core
-core/SkillWeaver.lua
-core/HealerLoader.lua
-core/HealerEngine.lua
-core/HealingHelper.lua
-core/SoundSystem.lua
-core/TalentDetector.lua
-core/CombatTracker.lua
-core/Init.lua
-core/SettingsManager.lua
-core/MinimapButton.lua
-
-# Modules
-modules/ContentDetector.lua
-modules/EquipmentManager.lua
-modules/BrannHelper.lua
-modules/TalentRecommendations.lua
-modules/SmartInterface.lua
-modules/RacialManager.lua
-modules/BattleResManager.lua
-modules/TrinketManager.lua
-modules/LossControlManager.lua
-modules/AdvancedPetLogic.lua
-modules/BuffManager.lua
-modules/StatsTracker.lua
-modules/StockManager.lua
-
-# Database
-db/Interrupts.lua
-Data/Loadouts.lua
-Data/StatWeights.lua
-
-# Engine
-engine/ConditionParser.lua
-engine/Racials.lua
-engine/LossOfControl.lua
-engine/BattleRes.lua
-engine/ResourceCheck.lua
-engine/CooldownLogic.lua
-engine/SequenceEngine.lua
-
-# Database
-db/SkillWeaverDB.lua
-talents/TalentDB.lua
-pvp/PvPTalentDB.lua
-heroes/HeroTalentDB.lua
-
-# UI
-ui/ModeSelector.xml
-ui/ModeSelector.lua
-ui/SequenceBrowser.lua
-ui/SequencePreview.lua
-ui/TalentViewer.lua
-ui/TalentViewer.lua
-ui/Overlay.lua
-ui/ItemOverlay.lua
-
-# Sequences
-sequences/Priest.lua
-sequences/Warrior.lua
-sequences/Paladin.lua
-sequences/Generated_Scraped.lua
-sequences/warrior_midnight.lua
-sequences/priest_midnight.lua
-
-# Loader (Must be last to load class modules)
-Loader.lua
+Skillweaver.xml
+Skillweaver.lua
